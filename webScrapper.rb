@@ -17,7 +17,8 @@ $userAgentAliases = {1 =>  "Linux Firefox",
                     10 =>  "Windows IE 9",
                     11 =>  "Windows Mozilla"}
 class Scrapper
-  include celluloid
+  include Celluloid
+  trap_exit :actor_died
 
   def search(url)
 
@@ -31,10 +32,11 @@ class Scrapper
   end
 end
 
-scrape_pool = Scrapper.pool(size: 10)
+scrape_pool = Scrapper.pool(size: 3)
 
-30_000.times do
-  scrape_pool.async.search(url)
+2.times do
+  scrape_pool.async.search(url) #dead actors cannot clean up crush...
+  #sleep(2)
 end
 
 #search(url)
